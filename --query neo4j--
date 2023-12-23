@@ -1,0 +1,26 @@
+--query neo4j--
+
+-feat solo tra gente seria- (with parameters)
+MATCH (a:Artist)-[:FEAT]-(a2:Artist)
+WHERE a.popularity >= $treshold AND a2.popularity >= $treshold
+RETURN a,a2
+
+call: :param treshold => 80
+
+
+-generi più popolari- (non so se ha molto senso perchè la popolarità è dell'artista)
+MATCH (a:Artist)-[:TYPE]->(g:Genre)
+WITH g, SUM(a.popularity) AS totalPopularity
+RETURN g, totalPopularity
+ORDER BY totalPopularity DESC
+LIMIT $limit
+
+
+-generi con più followers-
+MATCH (a:Artist)-[:TYPE]->(g:Genre)
+WITH g, SUM(a.followers) AS totalFollowers
+RETURN g, totalFollowers
+ORDER BY totalFollowers DESC
+LIMIT $limit
+//it could be interesting to notice any difference between the results of the 2 queries above
+
