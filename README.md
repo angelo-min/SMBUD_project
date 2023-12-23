@@ -1,5 +1,17 @@
 # SMBUD_project
 
+script import Neo4j
+- spotify_id
+- name
+- followers
+- popularity
+- genres
+- chart_hits
+          artist{spotify_id, name, followers, popularity}
+          spotify_id -[:HIT{number: x}]-> country
+          spotify_id -[:TYPE]-> genre
+          spotify_id -[:FEAT]- spotify_id
+
 dataset Spotify
 - id spotify
 - artist
@@ -25,6 +37,7 @@ query gpt
 
 
 Dataset stipendi
+
 MongoDB
 problemi:
   - rapporti stipendio / lavoro da casa
