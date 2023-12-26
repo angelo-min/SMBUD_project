@@ -26,12 +26,8 @@ problem:
   - community detection
 
 query gpt
-  - artist who have collaborated across multiple genres
   - predicting future collaborations using common neighbors
   - mapping the global influence of artists
-  - artists' collaboration network visualization
-
-
 
 Dataset stipendi
 
