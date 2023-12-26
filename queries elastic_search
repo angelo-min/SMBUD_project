@@ -26,3 +26,23 @@ GET /job_posting/_search {
 	}
 
 }
+
+-company size and its impact-
+GET /job_posting/_search {
+	"query":{
+		"match":{
+			"description":{
+				"query": "remote hybrid home flexible",
+				"operator": "or"
+			}
+		}
+	},
+	"aggs":{
+		"size_company_remote": {
+			"terms": {
+				"field": "company_size"
+			}
+		}
+	}
+
+}
