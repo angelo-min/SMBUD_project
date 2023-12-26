@@ -14,6 +14,10 @@ WITH g, SUM(a.popularity) AS totalPopularity
 RETURN g, totalPopularity
 ORDER BY totalPopularity DESC
 LIMIT $limit
+-oppure potrebbe essere popolarità del genere intesa come quanti artisti appartengono a quel genere-
+MATCH (a:Artists)-[:TYPE]->(g:Genre)
+WITH g.NAME, count(*) as num_artists
+ORDER BY num_artists DESC
 
 
 -generi con più followers-
