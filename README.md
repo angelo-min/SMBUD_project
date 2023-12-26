@@ -21,9 +21,6 @@ problem:
   ---- Collaborazioni in base al genere -----
   - distribuzione features
   - feat in particolari nicchie
-  - feat solo tra gente seria
-  - generi più popolari
-  - generi con più followers
   - legame popolarità - num followers -> bot detection (molti num followers altissimo nonostante popolarità molto basso)
   - generi per paesi (hit per paese) -> aumentare ascolti migliorando ascolti in base al proprio paese
   - community detection
