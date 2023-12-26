@@ -31,7 +31,7 @@ query gpt
 
 Dataset stipendi
 
-MongoDB
+elastic search
 problemi:
   - rapporti stipendio / lavoro da casa
       - are companies in certain locations more likely to offer remote work?
@@ -47,6 +47,7 @@ problemi:
       - cluster abalysis to identify distinct groups or patterns in data
   - predictive modeling
         - dimmi chi sei e ti dirò quanto guadagni (in che percentile stai )
+  - sostenibilità nelle compagnie
     
 queries:
   - yearly growth of average salaries in data science
