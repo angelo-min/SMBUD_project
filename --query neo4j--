@@ -1,6 +1,6 @@
 --query neo4j--
 
--feat solo tra gente seria- (with parameters)
+1-feat solo tra gente seria- (with parameters)
 MATCH (a:Artist)-[:FEAT]-(a2:Artist)
 WHERE a.popularity >= $treshold AND a2.popularity >= $treshold
 RETURN a,a2
@@ -8,7 +8,7 @@ RETURN a,a2
 call: :param treshold => 80
 
 
--generi più popolari- (non so se ha molto senso perchè la popolarità è dell'artista)
+2-generi più popolari- (non so se ha molto senso perchè la popolarità è dell'artista)
 MATCH (a:Artist)-[:TYPE]->(g:Genre)
 WITH g, SUM(a.popularity) AS totalPopularity
 RETURN g, totalPopularity
@@ -20,7 +20,7 @@ WITH g.NAME, count(*) as num_artists
 ORDER BY num_artists DESC
 
 
--generi con più followers-
+3-generi con più followers-
 MATCH (a:Artist)-[:TYPE]->(g:Genre)
 WITH g, SUM(a.followers) AS totalFollowers
 RETURN g, totalFollowers
@@ -28,12 +28,43 @@ ORDER BY totalFollowers DESC
 LIMIT $limit
 //it could be interesting to notice any difference between the results of the 2 queries above
 
-- artists who have collaborated across multiple genres-
+4- artists who have collaborated across multiple genres-
 MATCH (g:Genre)<-[t:TYPE]-(a:Artist)-[:FEAT]->(a2:Artist)
 WITH a, count(g) as num_genres, collect(g) as genres
 WHERE num_genres > 1
 RETURN a, genres, num_genres
 
--artists collaboration network visualization-
+5-artists collaboration network visualization-
 MATCH p=(:Country)<-[h:HIT]-(:Artist)-[:FEAT]-(:Artist)-[h2:HIT]->(:Country)
 RETURN p
+
+6- hits in un paese-
+MATCH (:Artist)-[h:HIT]->(c:Country)
+WHERE c.name = $name
+RETURN SUM(h.hits) AS hits, c.name
+ORDER BY hits
+
+7-influential artists-
+MATCH (a:Artist)
+RETURN a.name, a.followers, a.popularity
+ORDER BY a.followers DESC, a.popularity DESC
+LIMIT $limit
+
+8-shared genres-
+MATCH (a:Artist)-[:TYPE]->(shared_genre:Genre)<-[:TYPE]-(a2:Artist)
+WHERE a<>a2
+RETURN a.name, a2.name, COLLECT(shared_genre) as shared_genres
+LIMIT $limit
+
+9-top collaborations in a genre- (non so se si può fare così)
+MATCH (a:Artist)<-[:FEAT]-(a2:Artist)-[:TYPE]->(g:Genre)
+RETURN a.name, a2.name, g.name, (a.popularity + a2.popularity) as sum_popularity
+ORDER BY sum_popularity
+LIMIT $limit
+
+10-discover emerging artists in a genre-
+MATCH (a:Artist)-[:TYPE]->(g:Genre)
+WHERE a.popularity < $treshold_popularity and g.name == $genre
+RETURN a.name, a.followers
+ORDER BY a.followers DESC
+LIMIT $limit
