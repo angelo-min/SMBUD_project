@@ -1,0 +1,28 @@
+-rapporto stipendio/lavoro da casa-
+The remote_work_count aggregation uses the value_count aggregation to count the number of jobs mentioning remote work.
+The total_jobs_count aggregation uses the cardinality aggregation to count the total number of unique jobs.
+GET /job_posting/_search {
+	"query":{
+		"bool": {
+	      "should": [
+	        { "match_phrase": { "description": "remote" }},
+	        { "match_phrase": { "description": "hybrid" }},
+	        { "match_phrase": { "description": "work from home" }},
+	        { "match_phrase": { "description": "flexible work arrangements" }}
+	      ]
+	    }
+	},
+	"aggs":{
+		"remote_work_count": {
+			"value_count":{
+				"field": "_id"
+			}
+		},
+		"total_jobs_count":{
+			"cardinality":{
+				"field": "_id"
+			}
+		}
+	}
+
+}
