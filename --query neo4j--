@@ -24,3 +24,12 @@ ORDER BY totalFollowers DESC
 LIMIT $limit
 //it could be interesting to notice any difference between the results of the 2 queries above
 
+- artists who have collaborated across multiple genres-
+MATCH (g:Genre)<-[t:TYPE]-(a:Artist)-[:FEAT]->(a2:Artist)
+WITH a, count(g) as num_genres, collect(g) as genres
+WHERE num_genres > 1
+RETURN a, genres, num_genres
+
+-artists collaboration network visualization-
+MATCH p=(:Country)<-[h:HIT]-(:Artist)-[:FEAT]-(:Artist)-[h2:HIT]->(:Country)
+RETURN p
