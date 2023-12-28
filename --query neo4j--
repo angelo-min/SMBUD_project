@@ -1,45 +1,45 @@
 --query neo4j--
 
 1-feat solo tra gente seria- (with parameters)
-MATCH (a:Artist)-[:FEAT]-(a2:Artist)
+MATCH (a:Artist)-[:FEATURING]-(a2:Artist)
 WHERE a.popularity >= $treshold AND a2.popularity >= $treshold
 RETURN a,a2
 
-call: :param treshold => 80
+call: :param treshold => 90 (ha senso da 90 che ritorna 24 relazioni)
 
 
 2-generi più popolari- (non so se ha molto senso perchè la popolarità è dell'artista)
-MATCH (a:Artist)-[:TYPE]->(g:Genre)
+MATCH (a:Artist)-[:HAS_GENRE]->(g:Genre)
 WITH g, SUM(a.popularity) AS totalPopularity
 RETURN g, totalPopularity
 ORDER BY totalPopularity DESC
-LIMIT $limit
+LIMIT 10
 -oppure potrebbe essere popolarità del genere intesa come quanti artisti appartengono a quel genere-
-MATCH (a:Artists)-[:TYPE]->(g:Genre)
-WITH g.NAME, count(*) as num_artists
+MATCH (a:Artist)-[:HAS_GENRE]->(g:Genre)
+return g.name , count(*) as num_artists
 ORDER BY num_artists DESC
 
 
 3-generi con più followers-
-MATCH (a:Artist)-[:TYPE]->(g:Genre)
+MATCH (a:Artist)-[:HAS_GENRE]->(g:Genre)
 WITH g, SUM(a.followers) AS totalFollowers
 RETURN g, totalFollowers
 ORDER BY totalFollowers DESC
-LIMIT $limit
+LIMIT 10
 //it could be interesting to notice any difference between the results of the 2 queries above
 
 4- artists who have collaborated across multiple genres-
-MATCH (g:Genre)<-[t:TYPE]-(a:Artist)-[:FEAT]->(a2:Artist)
-WITH a, count(g) as num_genres, collect(g) as genres
+MATCH (g:Genre)<-[t:HAS_GENRE]-(a:Artist)-[:FEATURING]->(a2:Artist)-[:HAS_GENRE]->(g)
+WITH a.name as first_artist, a2.name as second_artist, count(g) as num_genres, collect(g.name) as genres
 WHERE num_genres > 1
-RETURN a, genres, num_genres
+RETURN first_artist, second_artist, genres, num_genres
 
-5-artists collaboration network visualization-
+5-artists collaboration network visualization- CI METTE 6 ANNI
 MATCH p=(:Country)<-[h:HIT]-(:Artist)-[:FEAT]-(:Artist)-[h2:HIT]->(:Country)
 RETURN p
 
 6- hits in un paese-
-MATCH (:Artist)-[h:HIT]->(c:Country)
+MATCH (:Artist)-[h:HAS_HIT]->(c:Country)
 WHERE c.name = $name
 RETURN SUM(h.hits) AS hits, c.name
 ORDER BY hits
@@ -48,23 +48,27 @@ ORDER BY hits
 MATCH (a:Artist)
 RETURN a.name, a.followers, a.popularity
 ORDER BY a.followers DESC, a.popularity DESC
-LIMIT $limit
+LIMIT 10
 
-8-shared genres-
-MATCH (a:Artist)-[:TYPE]->(shared_genre:Genre)<-[:TYPE]-(a2:Artist)
+8-shared genres- (non ce la fa con la memoria -> ce ne sono troppi neanche se si fa il limite 1 - credo perchè ci sono troppi generi in comune con 2 artisti)
+MATCH (a:Artist)-[:HAS_GENRE]->(shared_genre:Genre)<-[:HAS_GENRE]-(a2:Artist)
 WHERE a<>a2
 RETURN a.name, a2.name, COLLECT(shared_genre) as shared_genres
-LIMIT $limit
+LIMIT 5
 
-9-top collaborations in a genre- (non so se si può fare così)
+9-top collaborations in a genre- (non ha senso secondo me così)
 MATCH (a:Artist)<-[:FEAT]-(a2:Artist)-[:TYPE]->(g:Genre)
 RETURN a.name, a2.name, g.name, (a.popularity + a2.popularity) as sum_popularity
 ORDER BY sum_popularity
 LIMIT $limit
 
 10-discover emerging artists in a genre-
-MATCH (a:Artist)-[:TYPE]->(g:Genre)
-WHERE a.popularity < $treshold_popularity and g.name == $genre
+MATCH (a:Artist)-[:HAS_GENRE]->(g:Genre)
+WHERE a.popularity < 50 and g.name = "rap"
 RETURN a.name, a.followers
 ORDER BY a.followers DESC
-LIMIT $limit
+LIMIT 10
+
+11-una cazzata che potrebbe essere carina è vedere come si collegano due artisti improbabili-
+MATCH p = shortestPath((a:Artist{name:"Jovanotti"})-[*]-(a2:Artist{name:"Eminem"}))
+RETURN p
