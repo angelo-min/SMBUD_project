@@ -39,11 +39,12 @@ ORDER BY num_genres DESC
 MATCH p=(:Country)<-[h:HIT]-(:Artist)-[:FEATURING]-(:Artist)-[h2:HIT]->(:Country)
 RETURN p
 
-6- hits in un paese-
-MATCH (:Artist)-[h:HAS_HIT]->(c:Country)
-WHERE c.name = $name
-RETURN SUM(h.hits) AS hits, c.name
-ORDER BY hits
+//6- hits in un paese-
+MATCH (a:Artist)-[h:HAS_HIT]->(c:Country)
+WITH a.name as artist, h.hits as number_of_hits
+WHERE c.name = $country_name
+RETURN artist, number_of_hits
+ORDER BY number_of_hits DESC
 
 7-influential artists-
 MATCH (a:Artist)
@@ -51,16 +52,25 @@ RETURN a.name, a.followers, a.popularity
 ORDER BY a.followers DESC, a.popularity DESC
 LIMIT 10
 
-8-shared genres- (non ce la fa con la memoria -> ce ne sono troppi neanche se si fa il limite 1 - credo perchè ci sono troppi generi in comune con 2 artisti)
+/* 8-shared genres- (non ce la fa con la memoria -> ce ne sono troppi neanche se si fa il limite 1 - 
+credo perchè ci sono troppi generi in comune con 2 artisti)
+soluzione, filtra in base ai generi più seguiti */
+// Step 1: Find top 10 genres
+MATCH (a:Artist)-[:HAS_GENRE]->(g:Genre)
+WITH g, SUM(a.followers) AS totalFollowers
+ORDER BY totalFollowers DESC
+LIMIT 10
+WITH COLLECT(g) AS top_genres
+// Step 2: Find artist pairs sharing these genres
 MATCH (a:Artist)-[:HAS_GENRE]->(shared_genre:Genre)<-[:HAS_GENRE]-(a2:Artist)
-WHERE a<>a2
+WHERE a <> a2 AND shared_genre IN top_genres
 RETURN a.name, a2.name, COLLECT(shared_genre) as shared_genres
-LIMIT 5
+LIMIT 100
 
-9-top collaborations in a genre- (non ha senso secondo me così)
-MATCH (a:Artist)<-[:FEATURING]-(a2:Artist)-[:TYPE]->(g:Genre)
+//9-top collaborations in a genre-
+MATCH (g:Genre)<-[:HAS_GENRE]-(a:Artist)<-[:FEATURING]-(a2:Artist)-[:HAS_GENRE]->(g:Genre)
 RETURN a.name, a2.name, g.name, (a.popularity + a2.popularity) as sum_popularity
-ORDER BY sum_popularity
+ORDER BY sum_popularity DESC
 LIMIT $limit
 
 10-discover emerging artists in a genre-
@@ -71,5 +81,19 @@ ORDER BY a.followers DESC
 LIMIT 10
 
 11-una cazzata che potrebbe essere carina è vedere come si collegano due artisti improbabili-
-MATCH p = shortestPath((a:Artist{name:"Jovanotti"})-[*]-(a2:Artist{name:"Eminem"}))
+MATCH p = shortestPath((a:Artist{name:"Jovanotti"})-[:FEATURING*]-(a2:Artist{name:"Eminem"}))
 RETURN p
+
+//12- top charts for selected countries
+WITH ["ITA", "ESP", "GBR", "FRA", "USA"] as country_list
+(si potrebbe fare per l'unione europea
+eu_list = ['AUT', 'BEL', 'BGR', 'HRV', 'CYP', 'CZE', 'DNK', 'EST', 'FIN', 'FRA', 
+'DEU', 'GRC', 'HUN', 'IRL', 'ITA', 'LVA', 'LTU', 'LUX', 'MLT', 'NLD', 'POL', 'PRT', 'ROU', 'SVK', 'SVN', 'ESP', 'SWE'])
+
+MATCH (a:Artist)-[h:HAS_HIT]->(c:Country)
+WHERE c.name in country_list
+WITH a as artist, SUM(h.hits) as total_hits
+RETURN artist.name, total_hits
+ORDER BY total_hits DESC
+LIMIT 100
+
