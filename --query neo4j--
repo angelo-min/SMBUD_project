@@ -1,6 +1,6 @@
 --query neo4j--
 
-1-feat solo tra gente seria- (with parameters)
+1-FEATURING solo tra gente seria- (with parameters)
 MATCH (a:Artist)-[:FEATURING]-(a2:Artist)
 WHERE a.popularity >= $treshold AND a2.popularity >= $treshold
 RETURN a,a2
@@ -28,14 +28,15 @@ ORDER BY totalFollowers DESC
 LIMIT 10
 //it could be interesting to notice any difference between the results of the 2 queries above
 
-4- artists who have collaborated across multiple genres-
-MATCH (g:Genre)<-[t:HAS_GENRE]-(a:Artist)-[:FEATURING]->(a2:Artist)-[:HAS_GENRE]->(g)
+//4- artists who have collaborated across multiple genres-
+MATCH (g:Genre)<-[t:HAS_GENRE]-(a:Artist)-[f:FEATURING]->(a2:Artist)-[:HAS_GENRE]->(g)
 WITH a.name as first_artist, a2.name as second_artist, count(g) as num_genres, collect(g.name) as genres
 WHERE num_genres > 1
 RETURN first_artist, second_artist, genres, num_genres
+ORDER BY num_genres DESC
 
 5-artists collaboration network visualization- CI METTE 6 ANNI
-MATCH p=(:Country)<-[h:HIT]-(:Artist)-[:FEAT]-(:Artist)-[h2:HIT]->(:Country)
+MATCH p=(:Country)<-[h:HIT]-(:Artist)-[:FEATURING]-(:Artist)-[h2:HIT]->(:Country)
 RETURN p
 
 6- hits in un paese-
@@ -57,7 +58,7 @@ RETURN a.name, a2.name, COLLECT(shared_genre) as shared_genres
 LIMIT 5
 
 9-top collaborations in a genre- (non ha senso secondo me così)
-MATCH (a:Artist)<-[:FEAT]-(a2:Artist)-[:TYPE]->(g:Genre)
+MATCH (a:Artist)<-[:FEATURING]-(a2:Artist)-[:TYPE]->(g:Genre)
 RETURN a.name, a2.name, g.name, (a.popularity + a2.popularity) as sum_popularity
 ORDER BY sum_popularity
 LIMIT $limit
