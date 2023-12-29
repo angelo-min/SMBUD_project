@@ -2,7 +2,7 @@
 The remote_work_count aggregation uses the value_count aggregation to count the number of jobs mentioning remote work.
 The total_jobs_count aggregation uses the cardinality aggregation to count the total number of unique jobs.
 
-****************************************VALIDATED****************************************
+1
 GET /job_posting/_search {
 	"query":{
 		"bool": {
@@ -29,8 +29,36 @@ GET /job_posting/_search {
 
 }
 
+NEW Version (Possibile che debba essere cambiata )
+GET /jobs/_search
+{
+  "size":0,
+  "aggs": {
+    "filtered_remote": {
+      "filter": {
+        "bool": {
+          "should": [
+            { "match_phrase": { "description": "remote" }},
+            { "match_phrase": { "description": "hybrid" }},
+            { "match_phrase": { "description": "work from home" }},
+            { "match_phrase": { "description": "flexible work arrangements" }}
+          ],
+          "minimum_should_match": 1
+        }
+      }
+    },
+    "total_jobs_count": {
+      "cardinality": {
+        "field": "job_id"
+      }
+    }
+  }
+}
+
+
 -company size and its impact- risultato abbastanza interessante
 
+2
 ****************************************VALIDATED****************************************
 GET /jobs/_search 
 {
@@ -53,6 +81,7 @@ GET /jobs/_search
 
 }
 
+3
 Distribuzione geografica dei lavori eco-sostenibili
 ****************************************VALIDATED****************************************
 GET /jobs/_search
@@ -64,6 +93,7 @@ GET /jobs/_search
       "fields": ["title", "description", "company_industry", "skills_desc"]
     }
   },
+"size":0
 "aggs": {
     
     "location_distribution": {
@@ -73,4 +103,83 @@ GET /jobs/_search
     }
 
 }
+}
+
+
+4
+CALCOLA IL RATIO TRA REMOTO E LAVORO NORMALE
+
+GET /jobs/_search
+{
+  "size": 0,
+  "aggs": {
+    "all_jobs": {
+      "terms": {
+        "script": {
+          "source": "'all'"
+        },
+        "size": 1
+      },
+      "aggs": {
+        "remote_jobs_count": {
+          "filter": {
+            "term": {
+              "remote_allowed": 1
+            }
+          }
+        },
+        "total_jobs": {
+          "value_count": {
+            "field": "job_id"
+          }
+        },
+        "remote_ratio": {
+          "bucket_script": {
+            "buckets_path": {
+              "remoteCount": "remote_jobs_count>_count",
+              "totalCount": "total_jobs"
+            },
+            "script": "params.remoteCount / params.totalCount * 100"
+          }
+        }
+      }
+    }
+  }
+}
+
+5
+RAPPORTO REMOTE/LAVORO NORMALE PER DIMENSIONE AZIENDALE 
+GET /jobs/_search
+{
+  "size": 0, 
+  "aggs": {
+    "by_company_size": {
+      "terms": {
+        "field": "company_size"
+      },
+      "aggs": {
+        "remote_jobs": {
+          "filter": {
+            "term": {
+              "remote_allowed": 1
+            }
+          }
+        },
+        "total_jobs": {
+          "value_count": {
+            "field": "job_id"
+          }
+        },
+        "remote_ratio": {
+          "bucket_script": {
+            "buckets_path": {
+              "remoteCount": "remote_jobs>_count",
+              "totalCount": "total_jobs"
+            },
+            "script": "params.remoteCount / params.totalCount * 100"
+          }
+        }
+      }
+    }
+  }
 }
