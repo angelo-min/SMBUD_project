@@ -27,8 +27,9 @@ GET /job_posting/_search {
 
 }
 
--company size and its impact-
-GET /job_posting/_search {
+-company size and its impact- risultato abbastanza interessante
+GET /jobs/_search 
+{
 	"query":{
 		"match":{
 			"description":{
@@ -37,6 +38,7 @@ GET /job_posting/_search {
 			}
 		}
 	},
+	"size": 0, 
 	"aggs":{
 		"size_company_remote": {
 			"terms": {
@@ -46,7 +48,6 @@ GET /job_posting/_search {
 	}
 
 }
-
 
 Distribuzione geografica dei lavori eco-sostenibili
 GET /jobs/_search
