@@ -1,6 +1,8 @@
 -rapporto stipendio/lavoro da casa-
 The remote_work_count aggregation uses the value_count aggregation to count the number of jobs mentioning remote work.
 The total_jobs_count aggregation uses the cardinality aggregation to count the total number of unique jobs.
+
+****************************************VALIDATED****************************************
 GET /job_posting/_search {
 	"query":{
 		"bool": {
@@ -15,12 +17,12 @@ GET /job_posting/_search {
 	"aggs":{
 		"remote_work_count": {
 			"value_count":{
-				"field": "_id"
+				"field": "job_id"
 			}
 		},
 		"total_jobs_count":{
 			"cardinality":{
-				"field": "_id"
+				"field": "job_id"
 			}
 		}
 	}
@@ -28,6 +30,8 @@ GET /job_posting/_search {
 }
 
 -company size and its impact- risultato abbastanza interessante
+
+****************************************VALIDATED****************************************
 GET /jobs/_search 
 {
 	"query":{
@@ -50,6 +54,7 @@ GET /jobs/_search
 }
 
 Distribuzione geografica dei lavori eco-sostenibili
+****************************************VALIDATED****************************************
 GET /jobs/_search
 {
   
