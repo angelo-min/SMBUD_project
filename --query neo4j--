@@ -1,6 +1,7 @@
 --query neo4j--
+** caricata su documento
 
-1-FEATURING solo tra gente seria- (with parameters)
+**1-FEATURING solo tra gente seria- (with parameters)
 MATCH (a:Artist)-[:FEATURING]-(a2:Artist)
 WHERE a.popularity >= $treshold AND a2.popularity >= $treshold
 RETURN a,a2
@@ -20,7 +21,7 @@ return g.name , count(*) as num_artists
 ORDER BY num_artists DESC
 
 
-3-generi con più followers-
+**3-generi con più followers-
 MATCH (a:Artist)-[:HAS_GENRE]->(g:Genre)
 WITH g, SUM(a.followers) AS totalFollowers
 RETURN g, totalFollowers
