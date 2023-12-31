@@ -47,7 +47,7 @@ WHERE c.name = $country_name
 RETURN artist, number_of_hits
 ORDER BY number_of_hits DESC
 
-7-influential artists-
+**7-influential artists-
 MATCH (a:Artist)
 RETURN a.name, a.followers, a.popularity
 ORDER BY a.followers DESC, a.popularity DESC
@@ -68,11 +68,20 @@ WHERE a <> a2 AND shared_genre IN top_genres
 RETURN a.name, a2.name, COLLECT(shared_genre) as shared_genres
 LIMIT 100
 
-//9-top collaborations in a genre-
+**//9-top collaborations in a genre-
 MATCH (g:Genre)<-[:HAS_GENRE]-(a:Artist)<-[:FEATURING]-(a2:Artist)-[:HAS_GENRE]->(g:Genre)
 RETURN a.name, a2.name, g.name, (a.popularity + a2.popularity) as sum_popularity
 ORDER BY sum_popularity DESC
 LIMIT $limit
+
+**//9.bis - 1 top collaboration for each genre
+MATCH (g:Genre)<-[:HAS_GENRE]-(a:Artist)<-[:FEATURING]-(a2:Artist)-[:HAS_GENRE]->(g)
+WITH  a.name AS artist1, a2.name AS artist2, g.name AS genre, (a.popularity + a2.popularity) AS sum_popularity
+ORDER BY genre, sum_popularity DESC
+WITH genre, COLLECT ({artist1: artist1, artist2: artist2, sum_popularity: sum_popularity})[0] AS topCollaboration
+RETURN genre, topCollaboration.artist1, topCollaboration.artist2, topCollaboration.sum_popularity
+ORDER BY topCollaboration.sum_popularity DESC
+LIMIT 10
 
 10-discover emerging artists in a genre-
 MATCH (a:Artist)-[:HAS_GENRE]->(g:Genre)
