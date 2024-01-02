@@ -3,7 +3,7 @@ The remote_work_count aggregation uses the value_count aggregation to count the 
 The total_jobs_count aggregation uses the cardinality aggregation to count the total number of unique jobs.
 NEW Version (Possibile che debba essere cambiata )
 -----da valutare se togliere perchè c'è il campo remote_allowed
-GET /jobs/_search
+**GET /jobs/_search
 {
   "size":0,
   "aggs": {
@@ -33,7 +33,7 @@ GET /jobs/_search
 
 2
 ****************************************VALIDATED****************************************
-GET /jobs/_search 
+**GET /jobs/_search 
 {
 	"query":{
 		"match":{
