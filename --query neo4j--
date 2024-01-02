@@ -90,7 +90,7 @@ RETURN a.name, a.followers
 ORDER BY a.followers DESC
 LIMIT 10
 
-11-una cazzata che potrebbe essere carina è vedere come si collegano due artisti improbabili-
+**11-una cazzata che potrebbe essere carina è vedere come si collegano due artisti improbabili-
 MATCH p = shortestPath((a:Artist{name:"Jovanotti"})-[:FEATURING*]-(a2:Artist{name:"Eminem"}))
 RETURN p
 
