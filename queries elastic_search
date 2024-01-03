@@ -174,7 +174,7 @@ GET /jobs/_search
         "field": "company_size"
       },
       "aggs": {
-        "remote_jobs": {
+        "sustainable_jobs": {
           "filter": {
             "bool": {
               "must": [
@@ -201,10 +201,10 @@ GET /jobs/_search
         "remote_ratio": {
           "bucket_script": {
             "buckets_path": {
-              "remoteCount": "remote_jobs>_count",
+              "sustainableCount": "sustainable_jobs>_count",
               "totalCount": "total_jobs"
             },
-            "script": "params.remoteCount / params.totalCount * 100"
+            "script": "params.sustainableCount / params.totalCount * 100"
           }
         }
       }
