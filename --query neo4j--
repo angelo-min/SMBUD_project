@@ -9,18 +9,6 @@ RETURN a,a2
 call: :param treshold => 90 (ha senso da 90 che ritorna 24 relazioni)
 
 
-2-generi più popolari- (non so se ha molto senso perchè la popolarità è dell'artista)
-MATCH (a:Artist)-[:HAS_GENRE]->(g:Genre)
-WITH g, SUM(a.popularity) AS totalPopularity
-RETURN g, totalPopularity
-ORDER BY totalPopularity DESC
-LIMIT 10
--oppure potrebbe essere popolarità del genere intesa come quanti artisti appartengono a quel genere-
-MATCH (a:Artist)-[:HAS_GENRE]->(g:Genre)
-return g.name , count(*) as num_artists
-ORDER BY num_artists DESC
-
-
 **3-generi con più followers-
 MATCH (a:Artist)-[:HAS_GENRE]->(g:Genre)
 WITH g, SUM(a.followers) AS totalFollowers
@@ -35,10 +23,6 @@ WITH a.name as first_artist, a2.name as second_artist, count(g) as num_genres, c
 WHERE num_genres > 1
 RETURN first_artist, second_artist, genres, num_genres
 ORDER BY num_genres DESC
-
-5-artists collaboration network visualization- CI METTE 6 ANNI
-MATCH p=(:Country)<-[h:HIT]-(:Artist)-[:FEATURING]-(:Artist)-[h2:HIT]->(:Country)
-RETURN p
 
 **//6- hits in un paese-
 MATCH (a:Artist)-[h:HAS_HIT]->(c:Country)
