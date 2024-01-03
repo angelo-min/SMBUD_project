@@ -156,3 +156,58 @@ GET /jobs/_search
     }
   }
 }
+
+
+
+
+
+YOYIOYIO 
+
+
+
+GET /jobs/_search
+{
+  "size": 0,
+  "aggs": {
+    "by_company_size": {
+      "terms": {
+        "field": "company_size"
+      },
+      "aggs": {
+        "remote_jobs": {
+          "filter": {
+            "bool": {
+              "must": [
+                {
+                  "multi_match": {
+                    "query": "sustainability renewable green eco-friendly environmental conservation energy-efficient organic recyclable biodegradable zero-waste climate-change solar wind geothermal biodiversity sustainable-development carbon-footprint eco-conscious natural-resources permaculture conservation clean-energy green-technology environmentalism sustainable-living LEED green-building emissions-reduction circular-economy eco-design earth-friendly planet-conscious sustainable-agriculture climate-resilience sustainable-fashion green-infrastructure sustainable-transportation eco-innovation green-finance sustainable-business renewable-resources green-urbanism eco-tourism water-conservation green-jobs sustainable-design green-investment clean-air forest-conservation sustainable-energy environmental-education green-policy sustainable-food-systems green-living environmental-protection sustainable-development-goals (SDGs) green-consumerism environmental-justice sustainable-materials green-tech eco-entrepreneurship green-energy-transition climate-action sustainability-awareness.",
+                    "fields": [
+                      "title",
+                      "description",
+                      "company_industry",
+                      "skills_desc"
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "total_jobs": {
+          "value_count": {
+            "field": "job_id"
+          }
+        },
+        "remote_ratio": {
+          "bucket_script": {
+            "buckets_path": {
+              "remoteCount": "remote_jobs>_count",
+              "totalCount": "total_jobs"
+            },
+            "script": "params.remoteCount / params.totalCount * 100"
+          }
+        }
+      }
+    }
+  }
+}
