@@ -71,7 +71,7 @@ GET /jobs/_search
     
     "location_distribution": {
       "terms": {
-        "field": "location"
+        "field": "company_country"
       }
     }
 
