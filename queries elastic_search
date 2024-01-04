@@ -198,7 +198,7 @@ GET /jobs/_search
             "field": "job_id"
           }
         },
-        "remote_ratio": {
+        "ratio": {
           "bucket_script": {
             "buckets_path": {
               "sustainableCount": "sustainable_jobs>_count",
