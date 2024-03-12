@@ -2,4 +2,4 @@
 
 2 database developed:
 - Neo4j DB for Spotify artist and songs
-- ElasticSearch DB for salaries analysis 
+- Elasticsearch DB for salaries analysis 
